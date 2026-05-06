@@ -1,8 +1,6 @@
-interface ImportMetaEnv {
-  readonly VITE_API_URL: string;
-  // Agrega aquí otras variables si las tienes...
-}
-
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
+declare namespace NodeJS {
+  interface ProcessEnv {
+    readonly REACT_APP_API_URL: string;
+    // Agrega aquí otras variables si las tienes...
+  }
 }

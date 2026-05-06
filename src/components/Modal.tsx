@@ -74,30 +74,32 @@ const Modal: React.FC<ModalProps> = ({ isOpen, title, message, onClose, type = '
             </p>
           )}
         </div>
-        <div
-          style={{
-            padding: '15px 20px',
-            borderTop: '1px solid #e0e0e0',
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <button
-            onClick={onClose}
+        {!children && (
+          <div
             style={{
-              backgroundColor: colors.header,
-              color: 'white',
-              border: 'none',
-              padding: '10px 25px',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: 'bold',
+              padding: '15px 20px',
+              borderTop: '1px solid #e0e0e0',
+              display: 'flex',
+              justifyContent: 'flex-end',
             }}
           >
-            Aceptar
-          </button>
-        </div>
+            <button
+              onClick={onClose}
+              style={{
+                backgroundColor: colors.header,
+                color: 'white',
+                border: 'none',
+                padding: '10px 25px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: 'bold',
+              }}
+            >
+              Aceptar
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

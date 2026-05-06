@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import InvoiceForm from './pages/InvoiceForm';
 import InvoiceList from './pages/InvoiceList';
+import CustomerPage from './pages/CustomerPage';
 import Footer from './components/Footer';
 import './App.css';
 
@@ -44,6 +45,20 @@ const Navigation: React.FC = () => {
       >
         📋 Ver Facturas
       </Link>
+      <Link
+        to="/customers"
+        style={{
+          padding: '10px 20px',
+          backgroundColor: location.pathname === '/customers' ? 'white' : 'transparent',
+          color: location.pathname === '/customers' ? '#1976d2' : 'white',
+          textDecoration: 'none',
+          borderRadius: '4px',
+          fontWeight: 'bold',
+          transition: 'all 0.3s',
+        }}
+      >
+        👥 Clientes
+      </Link>
     </nav>
   );
 };
@@ -67,6 +82,7 @@ function App() {
           <Routes>
             <Route path="/" element={<InvoiceForm />} />
             <Route path="/list" element={<InvoiceList />} />
+            <Route path="/customers" element={<CustomerPage />} />
           </Routes>
         </main>
 
