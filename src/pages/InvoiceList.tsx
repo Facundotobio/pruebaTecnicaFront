@@ -16,9 +16,12 @@ const InvoiceList: React.FC = () => {
     const fetchInvoices = async () => {
       try {
         const response = await api.get('/Invoice');
-        setInvoices(response.data);
+        // Validar que la respuesta sea un array
+        const data = Array.isArray(response.data) ? response.data : [];
+        setInvoices(data);
       } catch (error) {
         console.error('Error al cargar facturas:', error);
+        setInvoices([]);
         setErrorModal({
           open: true,
           message: 'Error al cargar la lista de facturas. Por favor, intente nuevamente.',
@@ -67,7 +70,8 @@ const InvoiceList: React.FC = () => {
       setSuccessModal({ open: true, message: 'Factura eliminada exitosamente.' });
       // Recargar la lista
       const response = await api.get('/Invoice');
-      setInvoices(response.data);
+      const data = Array.isArray(response.data) ? response.data : [];
+      setInvoices(data);
     } catch (error) {
       console.error('Error al eliminar factura:', error);
       setDeleteModal({ open: false, invoiceId: 0, invoiceNumber: '' });
@@ -125,7 +129,7 @@ const InvoiceList: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {invoices.map((invoice, index) => (
+              {Array.isArray(invoices) && invoices.map((invoice, index) => (
                 <tr
                   key={invoice.invoiceId}
                   style={{

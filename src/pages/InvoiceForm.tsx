@@ -24,9 +24,12 @@ const InvoiceForm: React.FC = () => {
     const fetchCustomers = async () => {
       try {
         const response = await api.get('/Customer');
-        setCustomers(response.data);
+        // Validar que la respuesta sea un array
+        const data = Array.isArray(response.data) ? response.data : [];
+        setCustomers(data);
       } catch (error) {
         console.error('Error al cargar clientes', error);
+        setCustomers([]);
       }
     };
     fetchCustomers();
@@ -126,7 +129,7 @@ const InvoiceForm: React.FC = () => {
             required
           >
             <option value={0}>-- Seleccione un cliente --</option>
-            {customers.map((customer) => (
+            {Array.isArray(customers) && customers.map((customer) => (
               <option key={customer.customerId} value={customer.customerId}>
                 {customer.nombre} ({customer.email})
               </option>
