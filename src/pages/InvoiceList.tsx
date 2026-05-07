@@ -113,9 +113,9 @@ const InvoiceList: React.FC = () => {
                   </td>
                   <td style={{ padding: '15px' }}>{formatDate(invoice.fecha || '')}</td>
                   <td style={{ padding: '15px' }}>
-                    {invoice.customer?.nombre}
+                    {invoice.customerNombre}
                     <br />
-                    <small style={{ color: '#666' }}>{invoice.customer?.email}</small>
+                    <small style={{ color: '#666' }}>{invoice.customerEmail}</small>
                   </td>
                   <td style={{ padding: '15px', textAlign: 'right', fontWeight: 'bold' }}>
                     {formatCurrency(invoice.total)}
@@ -168,7 +168,7 @@ const InvoiceList: React.FC = () => {
           <div>
             <div style={{ marginBottom: '15px' }}>
               <p style={{ margin: '5px 0' }}>
-                <strong>Cliente:</strong> {selectedInvoice.customer?.nombre}
+                <strong>Cliente:</strong> {selectedInvoice.customerNombre}
               </p>
               <p style={{ margin: '5px 0' }}>
                 <strong>Fecha:</strong> {formatDate(selectedInvoice.fecha || '')}

@@ -22,5 +22,6 @@ export interface Invoice {
   fecha?: string;
   total: number;
   items: InvoiceItem[];
-  customer?: Customer;
+  customerNombre?: string;
+  customerEmail?: string;
 }

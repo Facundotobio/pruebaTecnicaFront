@@ -1,46 +1,144 @@
-# Getting Started with Create React App
+# Sistema de Facturación - Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Aplicación web para la gestión de facturas y clientes desarrollada con React y TypeScript.
 
-## Available Scripts
+## 🚀 Demo en Vivo
 
-In the project directory, you can run:
+- **Frontend**: [https://prueba-tecnica-front-sigma.vercel.app](https://prueba-tecnica-front-sigma.vercel.app)
+- **Backend**: [https://pruebatecnicaback-q0cq.onrender.com/api](https://pruebatecnicaback-q0cq.onrender.com/api)
 
-### `npm start`
+## 📋 Funcionalidades
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### 🔐 Autenticación
+- Login con email (JWT)
+- Protección de rutas
+- Token con validez de 8 horas
+- Logout automático al expirar
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### 🧾 Gestión de Facturas
+- Crear facturas con selección de cliente
+- Agregar múltiples ítems (productos/servicios)
+- Validación anti-duplicados de productos
+- Listado de facturas con detalle completo
+- Visualización de ítems por factura
 
-### `npm test`
+### 👥 Gestión de Clientes
+- Crear nuevos clientes
+- Editar clientes existentes
+- Eliminar clientes (con validación de facturas activas)
+- Listado de clientes con información completa
+- Validación de email y campos obligatorios
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 🔔 Notificaciones
+- Modales personalizados para alertas
+- Mensajes de éxito y error
+- Confirmaciones para acciones críticas
 
-### `npm run build`
+## 🛠️ Tecnologías
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **React 19** - Framework UI
+- **TypeScript** - Tipado estático
+- **Axios** - Cliente HTTP
+- **React Router DOM** - Navegación
+- **JWT** - Autenticación
+- **CSS-in-JS** - Estilos inline
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 📦 Instalación
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+# Clonar el repositorio
+git clone https://github.com/tu-usuario/pruebatecnicafacundotobiofront.git
 
-### `npm run eject`
+# Entrar al directorio
+cd pruebatecnicafacundotobiofront
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+# Instalar dependencias
+npm install
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🔧 Configuración
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Crear archivo `.env` en la raíz del proyecto:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```env
+REACT_APP_API_URL=https://pruebatecnicaback-q0cq.onrender.com/api
+```
 
-## Learn More
+Para desarrollo local:
+```env
+REACT_APP_API_URL=https://localhost:7136/api
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🚀 Comandos Disponibles
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+# Iniciar servidor de desarrollo
+npm start
+
+# Crear build de producción
+npm run build
+
+# Ejecutar tests
+npm test
+```
+
+## 📁 Estructura del Proyecto
+
+```
+src/
+├── components/
+│   ├── Footer.tsx          # Pie de página
+│   └── Modal.tsx           # Componente modal reutilizable
+├── pages/
+│   ├── LoginPage.tsx       # Página de login
+│   ├── InvoiceForm.tsx     # Crear facturas
+│   ├── InvoiceList.tsx     # Listar facturas
+│   └── CustomerPage.tsx    # Gestión de clientes
+├── services/
+│   └── api.ts              # Configuración de Axios + JWT
+├── types/
+│   └── index.ts            # Interfaces TypeScript
+├── App.tsx                 # Componente principal + rutas
+└── index.tsx               # Punto de entrada
+```
+
+## 🔐 Seguridad
+
+- **JWT**: Tokens almacenados en localStorage, enviados en header `Authorization: Bearer <token>`
+- **Protección de rutas**: Redirección automática a login si no hay sesión
+- **Manejo de 401**: Limpieza de tokens y redirección al expirar
+- **Validaciones**: Frontend valida campos antes de enviar al backend
+- **No expone credenciales**: Sin passwords ni secrets hardcodeados
+
+## 🌐 API Endpoints Consumidos
+
+```
+POST   /api/Auth/login              # Login (público)
+GET    /api/Customer                # Listar clientes
+POST   /api/Customer                # Crear cliente
+PUT    /api/Customer/{id}          # Actualizar cliente
+DELETE /api/Customer/{id}          # Eliminar cliente
+GET    /api/Invoice                 # Listar facturas
+POST   /api/Invoice                 # Crear factura
+```
+
+## 📱 Flujo de Uso
+
+1. **Login**: Ingresar email válido del sistema
+2. **Clientes**: Crear/editar clientes del sistema
+3. **Crear Factura**: Seleccionar cliente y agregar ítems
+4. **Ver Facturas**: Consultar facturas existentes con detalle
+
+## 🚀 Despliegue
+
+### Vercel (Frontend)
+1. Conectar repositorio en [vercel.com](https://vercel.com)
+2. Configurar variable de entorno: `REACT_APP_API_URL`
+3. Deploy automático en cada push
+
+### Render (Backend)
+El backend ya está desplegado y listo para consumir.
+
+## 👨‍💻 Autor
+
+**Facundo Tobio** - Prueba Técnica Full Stack
