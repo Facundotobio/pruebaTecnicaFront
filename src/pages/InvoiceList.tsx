@@ -9,8 +9,6 @@ const InvoiceList: React.FC = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [errorModal, setErrorModal] = useState({ open: false, message: '' });
-  const [deleteModal, setDeleteModal] = useState({ open: false, invoiceId: 0, invoiceNumber: '' });
-  const [successModal, setSuccessModal] = useState({ open: false, message: '' });
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -55,33 +53,6 @@ const InvoiceList: React.FC = () => {
     setModalOpen(true);
   };
 
-  const handleDeleteClick = (invoice: Invoice) => {
-    setDeleteModal({
-      open: true,
-      invoiceId: invoice.invoiceId || 0,
-      invoiceNumber: invoice.numero || '',
-    });
-  };
-
-  const handleConfirmDelete = async () => {
-    try {
-      await api.delete(`/Invoice/${deleteModal.invoiceId}`);
-      setDeleteModal({ open: false, invoiceId: 0, invoiceNumber: '' });
-      setSuccessModal({ open: true, message: 'Factura eliminada exitosamente.' });
-      // Recargar la lista
-      const response = await api.get('/Invoice');
-      const data = Array.isArray(response.data) ? response.data : [];
-      setInvoices(data);
-    } catch (error) {
-      console.error('Error al eliminar factura:', error);
-      setDeleteModal({ open: false, invoiceId: 0, invoiceNumber: '' });
-      setErrorModal({
-        open: true,
-        message: 'Error al eliminar la factura. Por favor, intente nuevamente.',
-      });
-    }
-  };
-
   if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: '50px' }}>
@@ -120,7 +91,7 @@ const InvoiceList: React.FC = () => {
           >
             <thead>
               <tr style={{ backgroundColor: '#1976d2', color: 'white' }}>
-                <th style={{ padding: '15px', textAlign: 'left' }}>Número</th>
+                <th style={{ padding: '15px', textAlign: 'left' }}>Factura</th>
                 <th style={{ padding: '15px', textAlign: 'left' }}>Fecha</th>
                 <th style={{ padding: '15px', textAlign: 'left' }}>Cliente</th>
                 <th style={{ padding: '15px', textAlign: 'right' }}>Total</th>
@@ -164,36 +135,20 @@ const InvoiceList: React.FC = () => {
                     </span>
                   </td>
                   <td style={{ padding: '15px', textAlign: 'center' }}>
-                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                      <button
-                        onClick={() => handleViewDetails(invoice)}
-                        style={{
-                          backgroundColor: '#4caf50',
-                          color: 'white',
-                          border: 'none',
-                          padding: '8px 15px',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '13px',
-                        }}
-                      >
-                        Ver Detalle
-                      </button>
-                      <button
-                        onClick={() => handleDeleteClick(invoice)}
-                        style={{
-                          backgroundColor: '#d32f2f',
-                          color: 'white',
-                          border: 'none',
-                          padding: '8px 15px',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '13px',
-                        }}
-                      >
-                        Eliminar
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => handleViewDetails(invoice)}
+                      style={{
+                        backgroundColor: '#4caf50',
+                        color: 'white',
+                        border: 'none',
+                        padding: '8px 15px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                      }}
+                    >
+                      Ver detalle
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -263,62 +218,6 @@ const InvoiceList: React.FC = () => {
         type="error"
       />
 
-      {/* Modal de Confirmación de Eliminación */}
-      <Modal
-        isOpen={deleteModal.open}
-        title="Confirmar Eliminación"
-        onClose={() => setDeleteModal({ open: false, invoiceId: 0, invoiceNumber: '' })}
-        type="error"
-      >
-        <div>
-          <p style={{ margin: '0 0 20px 0', fontSize: '16px', color: '#333' }}>
-            ¿Está seguro que desea eliminar la factura <strong>{deleteModal.invoiceNumber}</strong>?
-          </p>
-          <p style={{ margin: '0', fontSize: '14px', color: '#666' }}>
-            Esta acción no se puede deshacer.
-          </p>
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }}>
-            <button
-              onClick={() => setDeleteModal({ open: false, invoiceId: 0, invoiceNumber: '' })}
-              style={{
-                backgroundColor: '#9e9e9e',
-                color: 'white',
-                border: 'none',
-                padding: '10px 20px',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '14px',
-              }}
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={handleConfirmDelete}
-              style={{
-                backgroundColor: '#d32f2f',
-                color: 'white',
-                border: 'none',
-                padding: '10px 20px',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: 'bold',
-              }}
-            >
-              Eliminar
-            </button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* Modal de Éxito */}
-      <Modal
-        isOpen={successModal.open}
-        title="¡Operación Exitosa!"
-        message={successModal.message}
-        onClose={() => setSuccessModal({ open: false, message: '' })}
-        type="success"
-      />
     </div>
   );
 };

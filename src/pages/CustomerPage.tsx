@@ -20,6 +20,8 @@ const CustomerPage: React.FC = () => {
     message: '',
     type: 'info' as 'error' | 'success' | 'info',
   });
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+  const [deleteModal, setDeleteModal] = useState({ open: false, customerId: 0, customerName: '' });
 
   const showModal = (title: string, message: string, type: 'error' | 'success' | 'info' = 'info') => {
     setModal({ isOpen: true, title, message, type });
@@ -44,6 +46,69 @@ const CustomerPage: React.FC = () => {
 
   const closeModal = () => {
     setModal({ ...modal, isOpen: false });
+  };
+
+  const handleEdit = (customer: Customer) => {
+    setEditingCustomer(customer);
+    setFormData({
+      nombre: customer.nombre,
+      direccion: customer.direccion || '',
+      telefono: customer.telefono || '',
+      email: customer.email || '',
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCustomer(null);
+    setFormData({ nombre: '', direccion: '', telefono: '', email: '' });
+    setFormErrors({});
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCustomer || !validateForm()) return;
+
+    setSubmitting(true);
+    try {
+      await api.put(`/Customer/${editingCustomer.customerId}`, formData);
+      showModal('¡Cliente Actualizado!', 'El cliente fue actualizado exitosamente.', 'success');
+      setEditingCustomer(null);
+      setFormData({ nombre: '', direccion: '', telefono: '', email: '' });
+      await fetchCustomers();
+    } catch (error: any) {
+      console.error('Error al actualizar cliente:', error);
+      showModal(
+        'Error al Actualizar',
+        error.response?.data?.title || error.message || 'Ocurrió un error al actualizar el cliente.',
+        'error'
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteClick = (customer: Customer) => {
+    setDeleteModal({
+      open: true,
+      customerId: customer.customerId,
+      customerName: customer.nombre,
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await api.delete(`/Customer/${deleteModal.customerId}`);
+      setDeleteModal({ open: false, customerId: 0, customerName: '' });
+      showModal('¡Cliente Eliminado!', 'El cliente fue eliminado exitosamente.', 'success');
+      await fetchCustomers();
+    } catch (error: any) {
+      console.error('Error al eliminar cliente:', error);
+      setDeleteModal({ open: false, customerId: 0, customerName: '' });
+      const errorMessage = error.response?.status === 400
+        ? 'No se puede eliminar un cliente con facturas activas.'
+        : (error.response?.data?.title || error.message || 'Error al eliminar el cliente.');
+      showModal('Error al Eliminar', errorMessage, 'error');
+    }
   };
 
   const validateForm = () => {
@@ -128,7 +193,7 @@ const CustomerPage: React.FC = () => {
   if (loading) {
     return (
       <div style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto' }}>
-        <h1>👥 Gestión de Clientes</h1>
+        <h1>👥 Gestión de clientes</h1>
         <p>Cargando...</p>
       </div>
     );
@@ -136,13 +201,13 @@ const CustomerPage: React.FC = () => {
 
   return (
     <div style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto' }}>
-      <h1>👥 Gestión de Clientes</h1>
+      <h1>👥 Gestión de clientes</h1>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
-        {/* Formulario de creación */}
+        {/* Formulario de creación o edición */}
         <div>
-          <h3>Nuevo Cliente</h3>
-          <form onSubmit={handleSubmit}>
+          <h3>{editingCustomer ? 'Editar cliente' : 'Nuevo cliente'}</h3>
+          <form onSubmit={editingCustomer ? handleUpdate : handleSubmit}>
             <div style={{ marginBottom: '15px' }}>
               <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                 Nombre *
@@ -235,28 +300,48 @@ const CustomerPage: React.FC = () => {
               )}
             </div>
 
-            <button
-              type="submit"
-              disabled={submitting}
-              style={{
-                width: '100%',
-                padding: '12px',
-                fontSize: '16px',
-                background: submitting ? '#ccc' : '#1976d2',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: submitting ? 'not-allowed' : 'pointer',
-              }}
-            >
-              {submitting ? 'Creando...' : 'Crear Cliente'}
-            </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              {editingCustomer && (
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    fontSize: '16px',
+                    background: '#9e9e9e',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancelar
+                </button>
+              )}
+              <button
+                type="submit"
+                disabled={submitting}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  fontSize: '16px',
+                  background: submitting ? '#ccc' : '#1976d2',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: submitting ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {submitting ? (editingCustomer ? 'Guardando...' : 'Creando...') : (editingCustomer ? 'Guardar cambios' : 'Crear cliente')}
+              </button>
+            </div>
           </form>
         </div>
 
         {/* Lista de clientes */}
         <div>
-          <h3>Clientes Existentes ({customers.length})</h3>
+          <h3>Clientes existentes ({customers.length})</h3>
           {customers.length === 0 ? (
             <div
               style={{
@@ -281,7 +366,39 @@ const CustomerPage: React.FC = () => {
                     boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   }}
                 >
-                  <h4 style={{ margin: '0 0 8px 0' }}>{customer.nombre}</h4>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <h4 style={{ margin: '0 0 8px 0' }}>{customer.nombre}</h4>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        onClick={() => handleEdit(customer)}
+                        style={{
+                          backgroundColor: '#ff9800',
+                          color: 'white',
+                          border: 'none',
+                          padding: '6px 12px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                        }}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(customer)}
+                        style={{
+                          backgroundColor: '#d32f2f',
+                          color: 'white',
+                          border: 'none',
+                          padding: '6px 12px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                        }}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
                   <p style={{ margin: '3px 0', fontSize: '14px', color: '#666' }}>
                     📧 {customer.email || 'Sin email'}
                   </p>
@@ -308,6 +425,54 @@ const CustomerPage: React.FC = () => {
         onClose={closeModal}
         type={modal.type}
       />
+
+      {/* Modal de Confirmación de Eliminación */}
+      <Modal
+        isOpen={deleteModal.open}
+        title="Confirmar eliminación"
+        onClose={() => setDeleteModal({ open: false, customerId: 0, customerName: '' })}
+        type="error"
+      >
+        <div>
+          <p style={{ margin: '0 0 20px 0', fontSize: '16px', color: '#333' }}>
+            ¿Está seguro que desea eliminar al cliente <strong>{deleteModal.customerName}</strong>?
+          </p>
+          <p style={{ margin: '0', fontSize: '14px', color: '#666' }}>
+            Esta acción no se puede deshacer
+          </p>
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }}>
+            <button
+              onClick={() => setDeleteModal({ open: false, customerId: 0, customerName: '' })}
+              style={{
+                backgroundColor: '#9e9e9e',
+                color: 'white',
+                border: 'none',
+                padding: '10px 20px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '14px',
+              }}
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleConfirmDelete}
+              style={{
+                backgroundColor: '#d32f2f',
+                color: 'white',
+                border: 'none',
+                padding: '10px 20px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: 'bold',
+              }}
+            >
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
