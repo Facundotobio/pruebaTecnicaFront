@@ -354,7 +354,7 @@ const CustomerPage: React.FC = () => {
               <p style={{ color: '#666' }}>No hay clientes registrados</p>
             </div>
           ) : (
-            <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+            <div>
               {Array.isArray(customers) && customers.map((customer) => (
                 <div
                   key={customer.customerId}

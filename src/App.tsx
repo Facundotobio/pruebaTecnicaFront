@@ -85,7 +85,7 @@ const Navigation: React.FC<NavigationProps> = ({ user, onLogout }) => {
       {/* Usuario y logout - derecha */}
       {user && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px' }}>
+          <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: 'bold' }}>
             👤 {user.nombre}
           </span>
           <button
