@@ -109,12 +109,6 @@ const Navigation: React.FC<NavigationProps> = ({ user, onLogout }) => {
   );
 };
 
-// Componente para proteger rutas
-const ProtectedRoute: React.FC<{ element: React.ReactElement }> = ({ element }) => {
-  const token = localStorage.getItem('token');
-  return token ? element : <Navigate to="/login" replace />;
-};
-
 function App() {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
